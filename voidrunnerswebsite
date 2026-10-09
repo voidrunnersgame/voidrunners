@@ -1,0 +1,105 @@
+from pathlib import Path
+import zipfile
+
+base = Path("/mnt/data/void_runners_website")
+base.mkdir(parents=True, exist_ok=True)
+
+files = {
+"index.html": """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b1c">
+  <title>VOID RUNNERS — Explore the Unknown</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="logo" href="#home"><span class="logo-mark">V</span> VOID RUNNERS</a>
+    <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#updates">Updates</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="eyebrow"><span class="pulse"></span> THE UNIVERSE IS YOURS TO EXPLORE</div>
+      <h1>RUN BEYOND<br><span>THE VOID.</span></h1>
+      <p class="hero-copy">Gear up, enter the unknown, and find out what waits beyond the stars.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#about">Explore the Game <span>↗</span></a>
+        <a class="button secondary" href="#updates">Latest Updates</a>
+      </div>
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="planet"></div>
+      <div class="hero-bottom"><span>UNKNOWN SPACE · UNLIMITED POSSIBILITIES</span><span>01 / 03</span></div>
+    </section>
+
+    <section class="section about" id="about">
+      <p class="section-kicker">01 — THE MISSION</p>
+      <h2>NOTHING OUT THERE<br>IS <span>AS IT SEEMS.</span></h2>
+      <p class="section-copy">Void Runners is a game project built around discovery, danger, and pushing into the unknown. The mission is only beginning.</p>
+    </section>
+
+    <section class="feature-grid" id="features">
+      <article class="feature-card"><span class="feature-number">01</span><div class="feature-icon">✦</div><h3>Explore</h3><p>Venture into mysterious places and uncover what lies beyond the familiar.</p></article>
+      <article class="feature-card"><span class="feature-number">02</span><div class="feature-icon">⌁</div><h3>Survive</h3><p>Stay alert, adapt to the unexpected, and keep moving when things get strange.</p></article>
+      <article class="feature-card"><span class="feature-number">03</span><div class="feature-icon">⟡</div><h3>Discover</h3><p>Find secrets, learn from every run, and help shape the future of the project.</p></article>
+    </section>
+
+    <section class="section updates" id="updates">
+      <p class="section-kicker">02 — TRANSMISSIONS</p>
+      <h2>STAY IN THE <span>LOOP.</span></h2>
+      <p class="section-copy">More information about Void Runners is coming. Check back for development news and launch updates.</p>
+      <button class="button primary" id="signal-button">Receive Signal <span>↗</span></button>
+      <p class="signal-message" id="signal-message" role="status"></p>
+    </section>
+  </main>
+
+  <footer><a class="logo" href="#home"><span class="logo-mark">V</span> VOID RUNNERS</a><span>BUILT FOR THE UNKNOWN.</span><a href="#home">BACK TO TOP ↑</a></footer>
+  <script src="script.js"></script>
+</body>
+</html>
+""",
+"style.css": """@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+:root{--bg:#080b1c;--panel:#10152b;--text:#f5f6ff;--muted:#a5acc8;--cyan:#68f0f2;--purple:#a98aff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:'Space Grotesk',Arial,sans-serif;overflow-x:hidden}a{color:inherit;text-decoration:none}.stars{position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:radial-gradient(#fff 1px,transparent 1px),radial-gradient(#68f0f2 1px,transparent 1px);background-size:83px 83px,127px 127px;background-position:0 0,40px 60px;z-index:-1}.site-header{height:82px;display:flex;align-items:center;justify-content:space-between;padding:0 7%;border-bottom:1px solid #ffffff16;background:#080b1cdd;position:sticky;top:0;z-index:10;backdrop-filter:blur(14px)}.logo{font:700 15px Orbitron,sans-serif;letter-spacing:2px;display:flex;align-items:center;gap:12px}.logo-mark{width:31px;height:31px;display:grid;place-items:center;border:1px solid var(--cyan);color:var(--cyan);transform:skew(-8deg)}.nav{display:flex;gap:34px;color:var(--muted);font-size:13px}.nav a:hover,footer a:hover{color:var(--cyan)}.menu-toggle{display:none;background:none;color:white;border:0;font-size:25px}.hero{min-height:660px;height:calc(100vh - 82px);max-height:850px;padding:130px 10% 50px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}.eyebrow,.section-kicker{font:600 10px Orbitron,sans-serif;letter-spacing:2.5px;color:var(--cyan)}.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cyan);margin-right:9px;box-shadow:0 0 14px var(--cyan)}h1,h2{font-family:Orbitron,sans-serif;letter-spacing:-1.5px;line-height:1.08;margin:22px 0}h1{font-size:clamp(48px,8vw,100px);position:relative;z-index:2}h1 span,h2 span{color:var(--cyan)}.hero-copy,.section-copy{max-width:480px;color:var(--muted);font-size:16px;line-height:1.8;position:relative;z-index:2}.hero-actions{display:flex;gap:14px;margin-top:24px;position:relative;z-index:2}.button{border:1px solid #ffffff2b;padding:15px 20px;font:600 11px Orbitron,sans-serif;letter-spacing:.6px;cursor:pointer;display:inline-flex;align-items:center;gap:18px;transition:transform .2s,background .2s}.button:hover{transform:translateY(-3px)}.primary{background:var(--cyan);color:#07101c;border-color:var(--cyan)}.primary:hover{background:#a2ffff}.secondary{background:#ffffff08}.planet{position:absolute;width:min(47vw,540px);aspect-ratio:1;border-radius:50%;right:5%;top:16%;background:radial-gradient(circle at 32% 28%,#b8c5ff 0,#6656b6 12%,#27275c 39%,#0a102b 65%,#050713 72%);box-shadow:inset -38px -20px 70px #000b,0 0 90px #6656b633;opacity:.85}.planet:after{content:'';position:absolute;inset:42% -17%;height:15%;border:2px solid #8be8f4aa;border-radius:50%;transform:rotate(-24deg);box-shadow:0 0 18px #68f0f255}.orbit{position:absolute;border:1px solid #68f0f21b;border-radius:50%;pointer-events:none}.orbit-one{width:65vw;height:65vw;right:-4%;top:-2%}.orbit-two{width:78vw;height:78vw;right:-10%;top:-9%}.hero-bottom{position:absolute;bottom:30px;left:10%;right:10%;display:flex;justify-content:space-between;font:10px Orbitron,sans-serif;letter-spacing:1.5px;color:#777f9f}.section{padding:110px 12%;position:relative}.about{background:linear-gradient(180deg,#0a0e21,#0d1227)}h2{font-size:clamp(30px,5vw,56px)}.section-copy{max-width:590px}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 10% 110px}.feature-card{padding:28px;background:linear-gradient(145deg,#141a34,#0c1023);border:1px solid #ffffff16;min-height:230px;position:relative}.feature-number{position:absolute;right:20px;top:20px;color:#7d86a8;font:11px Orbitron,sans-serif}.feature-icon{font-size:32px;color:var(--cyan);margin:10px 0 20px}.feature-card h3{font:600 18px Orbitron,sans-serif}.feature-card p{color:var(--muted);font-size:14px;line-height:1.7}.updates{background:radial-gradient(ellipse at 80% 40%,#3e327033,transparent 50%),#0b0f22}.signal-message{color:var(--cyan);min-height:20px;font-size:13px}footer{padding:30px 7%;border-top:1px solid #ffffff18;display:flex;align-items:center;justify-content:space-between;color:var(--muted);font:10px Orbitron,sans-serif;letter-spacing:1px}footer .logo{color:var(--text)}@media(max-width:700px){.site-header{height:70px;padding:0 6%}.menu-toggle{display:block}.nav{display:none;position:absolute;top:69px;left:0;right:0;padding:20px;background:#0b0f22;flex-direction:column;gap:20px}.nav.open{display:flex}.hero{height:auto;min-height:690px;padding:100px 7% 90px}.planet{width:72vw;right:-20%;top:17%;opacity:.45}h1{font-size:clamp(46px,13vw,76px)}.hero-copy{max-width:360px}.hero-actions{flex-wrap:wrap}.hero-bottom{left:7%;right:7%;font-size:8px}.section{padding:80px 7%}.feature-grid{grid-template-columns:1fr;padding:0 7% 80px}.feature-card{min-height:190px}footer{padding:25px 7%;gap:18px;flex-wrap:wrap}footer>span{display:none}}
+""",
+"script.js": """const menuButton = document.querySelector('.menu-toggle');
+const nav = document.querySelector('.nav');
+
+menuButton.addEventListener('click', () => {
+  const isOpen = nav.classList.toggle('open');
+  menuButton.setAttribute('aria-expanded', String(isOpen));
+});
+
+nav.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    nav.classList.remove('open');
+    menuButton.setAttribute('aria-expanded', 'false');
+  });
+});
+
+document.querySelector('#signal-button').addEventListener('click', () => {
+  document.querySelector('#signal-message').textContent =
+    'Signal received. Check back here for future Void Runners updates!';
+});
+"""
+}
+
+for name, content in files.items():
+    (base / name).write_text(content, encoding="utf-8")
+
+zip_path = Path("/mnt/data/void_runners_website.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+    for name in files:
+        zf.write(base / name, arcname=name)
+
+print("Created the Void Runners website ZIP and the three individual files.")
+print(f"ZIP: {zip_path}")
+print(f"Files: {', '.join(str(base / name) for name in files)}")
